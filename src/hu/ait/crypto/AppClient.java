@@ -1,14 +1,22 @@
 package hu.ait.crypto;
 
+import com.microsoft.azure.storage.CloudStorageAccount;
+import com.microsoft.azure.storage.blob.CloudBlobClient;
+
 import java.io.*;
+import java.net.URISyntaxException;
+import java.security.InvalidKeyException;
 
 public class AppClient {
 
     private static final String CLIENT_CONFIG = "config/client-config.txt";
+    private static final String DEFAULT_ENDPOINTS_PROTOCOL = "https";
 
     private boolean initialUse;
     private String accountName;
     private String accountKey;
+    private CloudStorageAccount csAccount;
+    private CloudBlobClient cbClient;
 
     public AppClient() {
 
@@ -28,6 +36,22 @@ public class AppClient {
             e.printStackTrace();
             System.exit(1);
         }
+
+        String connectionString = "DefaultEndpointsProtocol=" +
+                DEFAULT_ENDPOINTS_PROTOCOL + ";"
+                + "AccountName=" + accountName + ";"
+                + "AccountKey=" + accountKey;
+        try {
+            csAccount = CloudStorageAccount.parse(connectionString);
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+            System.exit(1);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+        cbClient = csAccount.createCloudBlobClient();
     }
 
     public String getAccountName() {
@@ -36,5 +60,13 @@ public class AppClient {
 
     public String getAccountKey() {
         return accountKey;
+    }
+
+    public CloudStorageAccount getCloudStorageAccount() {
+        return csAccount;
+    }
+
+    public CloudBlobClient getCloudBlobClient() {
+        return cbClient;
     }
 }
