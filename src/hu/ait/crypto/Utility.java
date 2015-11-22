@@ -7,30 +7,12 @@ public final class Utility {
     public static final String STORAGE_UPLOADMANAGER = "hu.ait.crypto.storage" +
             ".UploadManager";
 
-    public static String inferFileNameFromPath(String path) {
-        if (!path.contains("/")) {
-            return path;
-        } else {
-            int separatorIndex = path.lastIndexOf("/");
-            return path.substring(separatorIndex+1, path.length());
-        }
-    }
-
-    public static String formatPath(String rawPath) {
-        if (rawPath.startsWith("./")) {
-            return rawPath.substring(1, rawPath.length());
-        } else if (rawPath.startsWith("/")) {
-            return rawPath;
-        } else {
-            return "/".concat(rawPath);
-        }
-    }
-
     public static String inferContainerNameFromPath(String path)
             throws IllegalArgumentException {
         String[] temp = path.split("/");
 
-        if (!path.contains("/") || temp[0] == null) {
+        if (!path.contains("/") || temp[0] == null
+                || temp[0].equals("")) {
             throw new IllegalArgumentException();
         } else {
             return temp[0];
@@ -43,8 +25,9 @@ public final class Utility {
             throw new IllegalArgumentException();
         } else {
             int separatorIndex = path.indexOf("/");
-            return path.substring(separatorIndex+1, path.length())
-                    .concat("/" + fileName);
+            return (path.charAt(path.length()-1) == '/') ?
+                    path.substring(separatorIndex+1).concat(fileName) :
+                    path.substring(separatorIndex+1).concat("/" + fileName);
         }
     }
 

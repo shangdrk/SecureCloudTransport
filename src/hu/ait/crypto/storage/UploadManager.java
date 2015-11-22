@@ -38,7 +38,7 @@ public class UploadManager {
         );
 
         try {
-            blob.upload(task.getFile(), task.getFileLength());
+            blob.upload(task.getFileInputStream(), task.getFileLength());
         } catch (IOException e) {
             Utility.handleException(e, getClass());
         }

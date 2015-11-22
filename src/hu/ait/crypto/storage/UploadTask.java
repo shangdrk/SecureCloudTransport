@@ -7,24 +7,29 @@ import java.io.*;
 public class UploadTask {
 
     private String containerName;
-    private FileInputStream file;
+    private FileInputStream fis;
     private String fileName;
     private long fileLength;
-    private String fileCompletePath;
+    private String fileAbsolutePath;
     private String cloudPath;
 
-    public UploadTask(String fromPath, String toPath) {
-        String cwd = System.getProperty("user.dir");
-        fileCompletePath = cwd.concat(Utility.formatPath(fromPath));
+    public UploadTask(String fromPath, String toPath)
+            throws FileNotFoundException {
 
+        File file = new File(fromPath);
+
+        if (!file.exists()) {
+            throw new FileNotFoundException();
+        }
+
+        fileLength = file.length();
+        fileAbsolutePath = file.getAbsolutePath();
         try {
-            File tempFile = new File(fileCompletePath);
-            fileLength = tempFile.length();
-            file = new FileInputStream(tempFile);
+            fis = new FileInputStream(file);
         } catch (FileNotFoundException e) {
             Utility.handleException(e, getClass());
         }
-        fileName = Utility.inferFileNameFromPath(fromPath);
+        fileName = file.getName();
         containerName = Utility.inferContainerNameFromPath(toPath);
         cloudPath = Utility.inferCloudPathFromPath(toPath, fileName);
     }
@@ -33,8 +38,8 @@ public class UploadTask {
         return containerName;
     }
 
-    public FileInputStream getFile() {
-        return file;
+    public FileInputStream getFileInputStream() {
+        return fis;
     }
 
     public String getFileName() {
@@ -45,8 +50,8 @@ public class UploadTask {
         return fileLength;
     }
 
-    public String getFileCompletePath() {
-        return fileCompletePath;
+    public String getFileAbsolutePath() {
+        return fileAbsolutePath;
     }
 
     public String getCloudPath() {
