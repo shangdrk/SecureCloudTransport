@@ -8,15 +8,16 @@ import com.microsoft.azure.storage.blob.CloudBlockBlob;
 import hu.ait.crypto.AppClient;
 import hu.ait.crypto.Utility;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-public class UploadManager {
+public class TaskManager {
 
     private AppClient client;
     private BlobContainerPermissions permissions;
 
-    public UploadManager(AppClient client) {
+    public TaskManager(AppClient client) {
         this.client = client;
         permissions = new BlobContainerPermissions();
         permissions.setPublicAccess(BlobContainerPublicAccessType.CONTAINER);
@@ -45,4 +46,31 @@ public class UploadManager {
     }
 
     public void uploadText(UploadTask task) {}
+
+    public void downloadToRoot(DownloadTask task) {}
+
+    public void downloadTextToRoot(DownloadTask task) {}
+
+    public void download(DownloadTask task)
+            throws FileNotFoundException,
+            URISyntaxException, StorageException {
+
+        CloudBlobContainer container = client.getCloudBlobClient()
+                .getContainerReference(task.getContainerName());
+        task.getCloudFiles().get(0).download(task.getOutputStreams().get(0));
+        try {
+            System.out.println(task.getCloudFiles().get(0).exists());
+            System.out.println(task.getOutputStreams().get(0).getFD());
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                task.getOutputStreams().get(0).close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void downloadText(DownloadTask task) {}
 }

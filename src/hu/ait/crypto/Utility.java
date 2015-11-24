@@ -2,10 +2,12 @@ package hu.ait.crypto;
 
 public final class Utility {
 
+    public static final String CONNECTION_SCHEME = "https";
+
     public static final String STORAGE_UPLOADTASK = "hu.ait.crypto.storage" +
             ".UploadTask";
     public static final String STORAGE_UPLOADMANAGER = "hu.ait.crypto.storage" +
-            ".UploadManager";
+            ".TaskManager";
 
     public static String inferContainerNameFromPath(String path)
             throws IllegalArgumentException {
@@ -29,6 +31,16 @@ public final class Utility {
                     path.substring(separatorIndex+1).concat(fileName) :
                     path.substring(separatorIndex+1).concat("/" + fileName);
         }
+    }
+
+    public static String inferCloudFileNameFromPath(String path) {
+        int lastDelimiter = path.lastIndexOf("/");
+        return path.substring(lastDelimiter+1);
+    }
+
+    public static String deleteContainerNameFromPath(String path) {
+        int firstDelimiter = path.indexOf("/");
+        return path.substring(firstDelimiter+1);
     }
 
     public static void handleException(Exception e, Class c) {

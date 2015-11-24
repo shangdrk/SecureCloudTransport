@@ -14,12 +14,15 @@ public class UploadTask {
     private String cloudPath;
 
     public UploadTask(String fromPath, String toPath)
-            throws FileNotFoundException {
+            throws FileNotFoundException, IllegalArgumentException {
 
         File file = new File(fromPath);
 
         if (!file.exists()) {
             throw new FileNotFoundException();
+        }
+        if (!file.isFile()) {
+            throw new IllegalArgumentException();
         }
 
         fileLength = file.length();
