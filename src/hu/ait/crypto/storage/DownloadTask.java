@@ -2,7 +2,9 @@ package hu.ait.crypto.storage;
 
 import com.microsoft.azure.storage.StorageException;
 import com.microsoft.azure.storage.blob.CloudBlobContainer;
+import com.microsoft.azure.storage.blob.CloudBlobDirectory;
 import com.microsoft.azure.storage.blob.CloudBlockBlob;
+import com.microsoft.azure.storage.blob.ListBlobItem;
 import hu.ait.crypto.AppClient;
 import hu.ait.crypto.Utility;
 
@@ -72,16 +74,11 @@ public class DownloadTask {
         outputStreams = new ArrayList<>();
         try {
             if (isFile) {
-                cloudFiles.add(container.getBlockBlobReference(
-                        cloudPathNoContainerName));
-                String cloudFileName = Utility.inferCloudFileNameFromPath(
-                        cloudFiles.get(0).getName()
-                );
-                outputStreams.add(new FileOutputStream(
-                        toPath.concat("/" + cloudFileName)
-                ));
+                addFile(cloudPathNoContainerName, toPath);
             } else {
-
+                CloudBlobDirectory dir = container.getDirectoryReference(
+                        cloudPathNoContainerName);
+                addFilesRecursively(dir, toPath);
             }
         } catch (URISyntaxException e) {
             e.printStackTrace();
@@ -94,16 +91,38 @@ public class DownloadTask {
         }
     }
 
+    private void addFile(String blobName, String toPath)
+            throws URISyntaxException, StorageException,
+            FileNotFoundException {
+        cloudFiles.add(container.getBlockBlobReference(
+                blobName));
+        String cloudFileName = Utility.inferCloudFileNameFromPath(blobName);
+        outputStreams.add(new FileOutputStream(
+                toPath.concat("/" + cloudFileName)
+        ));
+    }
+
+    private void addFilesRecursively(CloudBlobDirectory dir, String toPath)
+            throws FileNotFoundException {
+        try {
+            for (ListBlobItem item : dir.listBlobs()) {
+                if (item instanceof CloudBlockBlob) {
+                    addFile(((CloudBlockBlob) item).getName(), toPath);
+                } else if (item instanceof CloudBlobDirectory) {
+                    addFilesRecursively((CloudBlobDirectory)item, toPath);
+                }
+            }
+        } catch (URISyntaxException e) {
+            //TODO
+            Utility.handleException(e, getClass());
+        } catch (StorageException e) {
+            //TODO
+            Utility.handleException(e, getClass());
+        }
+    }
+
     public URI getCloudPath() {
         return cloudPath;
-    }
-
-    public String getContainerName() {
-        return containerName;
-    }
-
-    public CloudBlobContainer getContainer() {
-        return container;
     }
 
     public boolean isFile() {

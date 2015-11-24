@@ -1,16 +1,14 @@
 package hu.ait.crypto.storage;
 
 import com.microsoft.azure.storage.StorageException;
-import com.microsoft.azure.storage.blob.BlobContainerPermissions;
-import com.microsoft.azure.storage.blob.BlobContainerPublicAccessType;
-import com.microsoft.azure.storage.blob.CloudBlobContainer;
-import com.microsoft.azure.storage.blob.CloudBlockBlob;
+import com.microsoft.azure.storage.blob.*;
 import hu.ait.crypto.AppClient;
 import hu.ait.crypto.Utility;
 
-import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.List;
 
 public class TaskManager {
 
@@ -52,25 +50,53 @@ public class TaskManager {
     public void downloadTextToRoot(DownloadTask task) {}
 
     public void download(DownloadTask task)
-            throws FileNotFoundException,
-            URISyntaxException, StorageException {
+            throws StorageException {
+        if (task.isFile()) {
+            CloudBlockBlob singleTask = task.getCloudFiles().get(0);
+            FileOutputStream fos = task.getOutputStreams().get(0);
 
-        CloudBlobContainer container = client.getCloudBlobClient()
-                .getContainerReference(task.getContainerName());
-        task.getCloudFiles().get(0).download(task.getOutputStreams().get(0));
-        try {
-            System.out.println(task.getCloudFiles().get(0).exists());
-            System.out.println(task.getOutputStreams().get(0).getFD());
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                task.getOutputStreams().get(0).close();
-            } catch (IOException e) {
-                e.printStackTrace();
+            singleTask.download(fos);
+        } else if (task.isDirectory()) {
+            List<CloudBlockBlob> tasks = task.getCloudFiles();
+            List<FileOutputStream> streams = task.getOutputStreams();
+
+            for (int i=0; i<tasks.size(); i++) {
+                tasks.get(i).download(streams.get(i));
             }
         }
     }
 
     public void downloadText(DownloadTask task) {}
+
+    public void listFiles() throws StorageException, URISyntaxException {
+        CloudBlobClient cbClient = client.getCloudBlobClient();
+
+        for (CloudBlobContainer container : cbClient.listContainers()) {
+            listFiles(container.getName());
+        }
+    }
+
+    public void listFiles(String containerName)
+            throws IllegalArgumentException, StorageException,
+            URISyntaxException {
+
+        CloudBlobContainer container = client.getCloudBlobClient()
+                .getContainerReference(containerName);
+        if (!container.exists()) {
+            throw new IllegalArgumentException();
+        }
+        for (ListBlobItem item : container.listBlobs()) {
+            if (item instanceof CloudBlockBlob) {
+                System.out.println(((CloudBlockBlob) item).getName());
+            } else if (item instanceof CloudBlobDirectory) {
+                listFiles(containerName,
+                        // TODO
+                        ((CloudBlobDirectory) item).getPrefix());
+            }
+        }
+    }
+
+    public void listFiles(String containerName, String dir) {
+
+    }
 }

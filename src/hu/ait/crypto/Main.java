@@ -4,7 +4,6 @@ import hu.ait.crypto.storage.DownloadTask;
 import hu.ait.crypto.storage.TaskManager;
 
 public class Main {
-
     public static void main(String[] args) {
         AppClient ac = new AppClient();
         /*try {
@@ -21,14 +20,10 @@ public class Main {
 
         try {
             DownloadTask task1 = new DownloadTask(ac,
-                    "example/dir/subdir/Certificate.pdf",
+                    "example/dir",
                     "config/noexist");
             TaskManager manager = new TaskManager(ac);
             manager.download(task1);
-            /*CloudBlobContainer container = ac.getCloudBlobClient()
-                    .getContainerReference("example");
-            CloudBlockBlob blob = container.getBlockBlobReference("dir/subdir/Certificate.pdf");
-            blob.download(new FileOutputStream("config/Certificate.pdf"));*/
 
         } catch (Exception e) {
             e.printStackTrace();
