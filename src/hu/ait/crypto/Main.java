@@ -1,11 +1,9 @@
 package hu.ait.crypto;
 
-import hu.ait.crypto.storage.DownloadTask;
-import hu.ait.crypto.storage.TaskManager;
-
 public class Main {
     public static void main(String[] args) {
         AppClient ac = new AppClient();
+
         /*try {
             UploadTask task1 = new UploadTask("Certificate.pdf",
                     "example/dir/subdir");
@@ -18,7 +16,7 @@ public class Main {
             e.printStackTrace();
         }*/
 
-        try {
+        /*try {
             DownloadTask task1 = new DownloadTask(ac,
                     "example/dir",
                     "config/noexist");
@@ -27,6 +25,6 @@ public class Main {
 
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
     }
 }

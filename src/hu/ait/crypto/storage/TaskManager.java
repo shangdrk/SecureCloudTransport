@@ -72,7 +72,10 @@ public class TaskManager {
         CloudBlobClient cbClient = client.getCloudBlobClient();
 
         for (CloudBlobContainer container : cbClient.listContainers()) {
+            System.out.println("Listing files in container " + "\""
+                    + container.getName() + "\"...");
             listFiles(container.getName());
+            System.out.println("");
         }
     }
 
