@@ -62,6 +62,8 @@ public class DecryptionManager {
 
             fileWriter.close();
             cipherReader.close();
+
+            //cleanUp();
         } catch (FileNotFoundException e) {
             // TODO
         } catch (IOException e) {

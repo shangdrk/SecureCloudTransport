@@ -98,4 +98,9 @@ public class EncryptionManager {
 
         return temp;
     }
+
+    public void cleanUp(String fileName) {
+        File garbage = new File(fileName);
+        garbage.delete();
+    }
 }

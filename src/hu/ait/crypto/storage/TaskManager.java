@@ -60,7 +60,8 @@ public class TaskManager {
             blob.setMetadata(metaData);
             blob.uploadMetadata();
 
-            //encryptionManager.cleanUp();
+            cleanUpBlobSpace(container, task);
+            encryptionManager.cleanUp(task.getFileAbsolutePath());
         }
     }
 
@@ -196,5 +197,24 @@ public class TaskManager {
         decryptionManager.decryptFile("config/noexist/shangd.jpg4947572406554475133.tmp");*/
 
         return ivList;
+    }
+
+    public void cleanUpBlobSpace(CloudBlobContainer container,
+                                 UploadTask task) {
+        try {
+            CloudBlockBlob oldBlob = container.getBlockBlobReference(
+                    task.getCloudPath()
+            );
+            CloudBlockBlob newBlob = container.getBlockBlobReference(
+                    Utility.inferCloudPathFromPath(task.getToPath(),
+                            task.getActualName())
+            );
+            newBlob.startCopy(oldBlob);
+            oldBlob.deleteIfExists();
+        } catch (StorageException e) {
+            // TODO
+        } catch (URISyntaxException e) {
+            // TODO
+        }
     }
 }

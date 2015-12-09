@@ -13,11 +13,13 @@ public class UploadTask {
     private long fileLength;
     private String fileAbsolutePath;
     private String cloudPath;
+    private String toPath;
 
     public UploadTask(String fromPath, String toPath)
             throws FileNotFoundException, IllegalArgumentException {
 
         File file = new File(fromPath);
+        this.toPath = toPath;
 
         if (!file.exists()) {
             throw new FileNotFoundException();
@@ -68,5 +70,9 @@ public class UploadTask {
 
     public String getCloudPath() {
         return cloudPath;
+    }
+
+    public String getToPath() {
+        return toPath;
     }
 }
