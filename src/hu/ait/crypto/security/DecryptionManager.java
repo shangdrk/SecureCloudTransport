@@ -69,7 +69,8 @@ public class DecryptionManager {
         }
     }
 
-    protected String finalizeFilename(String filename) {
-        return null;
+    public String finalizeFilename(String filename) {
+        // TODO
+        return "shangd.jpg";
     }
 }

@@ -9,6 +9,7 @@ public class UploadTask {
     private String containerName;
     private FileInputStream fis;
     private String fileName;
+    private String actualName;
     private long fileLength;
     private String fileAbsolutePath;
     private String cloudPath;
@@ -43,6 +44,14 @@ public class UploadTask {
 
     public FileInputStream getFileInputStream() {
         return fis;
+    }
+
+    public void setActualName(String actualName) {
+        this.actualName = actualName;
+    }
+
+    public String getActualName() {
+        return actualName;
     }
 
     public String getFileName() {

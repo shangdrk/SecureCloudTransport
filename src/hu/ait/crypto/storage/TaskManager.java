@@ -4,16 +4,25 @@ import com.microsoft.azure.storage.StorageException;
 import com.microsoft.azure.storage.blob.*;
 import hu.ait.crypto.AppClient;
 import hu.ait.crypto.Utility;
+import hu.ait.crypto.security.DecryptionManager;
+import hu.ait.crypto.security.EncryptionManager;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class TaskManager {
 
     private AppClient client;
     private BlobContainerPermissions permissions;
+
+    private EncryptionManager encryptionManager;
+    private DecryptionManager decryptionManager;
 
     public TaskManager(AppClient client) {
         this.client = client;
@@ -27,6 +36,7 @@ public class TaskManager {
 
     public void upload(UploadTask task)
             throws URISyntaxException, StorageException {
+
         CloudBlobContainer container = client.getCloudBlobClient()
                 .getContainerReference(task.getContainerName());
         container.createIfNotExists();
@@ -40,6 +50,17 @@ public class TaskManager {
             blob.upload(task.getFileInputStream(), task.getFileLength());
         } catch (IOException e) {
             Utility.handleException(e, getClass());
+        }
+
+        if (encryptionManager != null) {
+            HashMap<String, String> metaData = new HashMap<>();
+            metaData.put("iv", java.util.Base64.getEncoder().encodeToString(
+                    encryptionManager.getIv()
+            ));
+            blob.setMetadata(metaData);
+            blob.uploadMetadata();
+
+            //encryptionManager.cleanUp();
         }
     }
 
@@ -101,5 +122,79 @@ public class TaskManager {
 
     public void listFiles(String containerName, String dir) {
 
+    }
+
+    public void setEncryptionManager(EncryptionManager manager) {
+        if (manager != null) {
+            this.encryptionManager = manager;
+        }
+    }
+
+    public void setDecryptionManager(DecryptionManager manager) {
+        if (manager != null) {
+            this.decryptionManager = manager;
+        }
+    }
+
+    public DecryptionManager getDecryptionManager() {
+        return decryptionManager;
+    }
+
+    public UploadTask createUploadTask(String fromPath, String toPath) {
+        UploadTask task = null;
+
+        try {
+            if (encryptionManager != null) {
+                encryptionManager.encryptFile(fromPath);
+                task = new UploadTask(encryptionManager.getEncryptedTemp()
+                        .getPath(), toPath);
+                task.setActualName(new File(fromPath).getName());
+            } else {
+                System.out.println("Your file is currently not protected by " +
+                        "crypto cipher.\n");
+                task = new UploadTask(fromPath, toPath);
+            }
+        } catch (FileNotFoundException e) {
+            // TODO
+        }
+
+        return task;
+    }
+
+    public List<byte[]> getTaskIv(DownloadTask task) {
+        List<byte[]> ivList = new ArrayList<>();
+
+        if (task.isFile()) {
+            CloudBlockBlob singleTask = task.getCloudFiles().get(0);
+            if (singleTask.getMetadata().containsKey("iv")) {
+                byte[] iv = java.util.Base64.getDecoder().decode(
+                        singleTask.getMetadata().get("iv")
+                );
+                ivList.add(iv);
+            } else {
+                ivList.add(null);
+            }
+        } else {
+            List<CloudBlockBlob> tasks = task.getCloudFiles();
+            for (CloudBlockBlob singleTask : tasks) {
+                if (singleTask.getMetadata().containsKey("iv")) {
+                    byte[] iv = java.util.Base64.getDecoder().decode(
+                            singleTask.getMetadata().get("iv")
+                    );
+                    ivList.add(iv);
+                } else {
+                    ivList.add(null);
+                }
+            }
+        }
+
+
+        /*byte[] iv = java.util.Base64.getDecoder().decode(
+                task.getMetadata().get("iv")
+        );
+        decryptionManager = new DecryptionManager(iv);
+        decryptionManager.decryptFile("config/noexist/shangd.jpg4947572406554475133.tmp");*/
+
+        return ivList;
     }
 }

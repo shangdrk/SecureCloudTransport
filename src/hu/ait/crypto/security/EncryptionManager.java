@@ -12,7 +12,8 @@ public class EncryptionManager {
 
     private SecretKey key;
     private Cipher cipher;
-    public static byte[] iv;
+    private File encryptedTemp;
+    private byte[] iv;
 
     public EncryptionManager() {
 
@@ -47,7 +48,7 @@ public class EncryptionManager {
         try {
             CipherOutputStream cipherWriter = new CipherOutputStream(
                     new FileOutputStream(
-                            getEncryptionTempName(filename)
+                            getEncryptionTemp(filename)
                     ), cipher
             );
             FileInputStream fileReader = new FileInputStream(filename);
@@ -66,12 +67,35 @@ public class EncryptionManager {
         }
     }
 
-    protected String getEncryptionTempName(String filename) {
-        int lastDot = filename.lastIndexOf(".");
-        if (lastDot >= 0) {
-            return "_~".concat(filename.substring(0, lastDot));
-        } else {
-            return "_~".concat(filename);
+    public File getEncryptionTemp(String filename) {
+        File temp = null;
+        File current = new File(filename);
+        try {
+            System.out.println(current.getPath());
+            System.out.println(current.getParent());
+            if (current.getParent() != null) {
+                temp = File.createTempFile(current.getName(),
+                        null, new File(current.getParent()));
+            } else {
+                temp = File.createTempFile(current.getName(),
+                        null, new File(System.getProperty("user.dir")));
+            }
+            encryptedTemp = temp;
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+
+        return temp;
+    }
+
+    public byte[] getIv() {
+        return iv;
+    }
+
+    public File getEncryptedTemp() {
+        File temp = encryptedTemp;
+        encryptedTemp = null;
+
+        return temp;
     }
 }
