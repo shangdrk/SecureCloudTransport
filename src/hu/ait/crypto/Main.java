@@ -1,12 +1,17 @@
 package hu.ait.crypto;
 
 
+import hu.ait.crypto.storage.*;
+import hu.ait.crypto.security.*;
+
+import java.util.List;
+
 public class Main {
 
     public static void main(String[] args) {
         AppClient ac = new AppClient();
 
-        /*try {
+        try {
             TaskManager manager = new TaskManager(ac);
             manager.setEncryptionManager(new EncryptionManager());
             UploadTask task1 = manager.createUploadTask("config/shangd.jpg",
@@ -14,9 +19,9 @@ public class Main {
             manager.upload(task1);
         } catch (Exception e) {
             e.printStackTrace();
-        }*/
+        }
 
-        /*try {
+        try {
             DownloadTask task1 = new DownloadTask(ac,
                     "example/dir/shangd.jpg4947572406554475133.tmp",
                     "config/noexist");
@@ -28,14 +33,14 @@ public class Main {
                 manager.setDecryptionManager(new DecryptionManager(
                         ivList.get(0))
                 );
-                manager.getDecryptionManager().decryptFile(task1);
+                manager.getDecryptionManager().decryptFile("config/noexist/shangd.jpg");
             } else {
                 // TODO
             }
 
         } catch (Exception e) {
             e.printStackTrace();
-        }*/
+        }
 
         /*try {
             byte[] test = new byte[] {
@@ -54,5 +59,28 @@ public class Main {
         } catch (Exception e) {
             e.printStackTrace();
         }*/
+
+        // command line arguments to upload/download a file
+//        if (args[0].length == 0) {System.out.println("Please specify an argument -u or -d or -l for upload, download, and list")}
+//
+//
+//        if (args[0].equals("-u")) {
+//            // TODO establish upload
+//            System.out.println("Command line arg: " + args[0]);
+//        } else if (args[0].equals("-d")) {
+//            // TODO establish download
+//            System.out.println("Command line arg: " + args[0]);
+//        } else if (args[0].equals("-l")) {
+//            // TODO list files in the blob
+//        }
+
+//        if (args.length > 0) {
+//            try {
+//                firstArg = Integer.parseInt(args[0]);
+//            } catch (NumberFormatException e) {
+//                System.err.println("Argument" + args[0] + " must be an integer.");
+//                System.exit(1);
+//            }
+//        }
     }
 }

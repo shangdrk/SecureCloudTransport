@@ -1,7 +1,10 @@
 package hu.ait.crypto;
 
 import com.microsoft.azure.storage.CloudStorageAccount;
+import com.microsoft.azure.storage.StorageException;
 import com.microsoft.azure.storage.blob.CloudBlobClient;
+import com.microsoft.azure.storage.blob.CloudBlobContainer;
+import com.microsoft.azure.storage.blob.ListBlobItem;
 
 import java.io.*;
 import java.net.URISyntaxException;
@@ -52,6 +55,20 @@ public class AppClient {
         }
 
         cbClient = csAccount.createCloudBlobClient();
+        // experimenting
+        CloudBlobContainer container = null;
+        try {
+            container = cbClient.getContainerReference("flashy");
+
+            for (ListBlobItem blobItem : container.listBlobs()) {
+                System.out.println(blobItem.getUri());
+            }
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        } catch (StorageException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public String getAccountName() {
