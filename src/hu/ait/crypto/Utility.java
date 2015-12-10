@@ -39,8 +39,29 @@ public final class Utility {
     }
 
     public static String deleteContainerNameFromPath(String path) {
-        int firstDelimiter = path.indexOf("/");
+        int firstDelimiter = path.indexOf("/", 1);
         return path.substring(firstDelimiter+1);
+    }
+
+    public static String getTempCloudFileName(String fromPath) {
+        String result = deleteContainerNameFromPath(fromPath);
+        int separator = result.lastIndexOf(".");
+        if (separator != -1) {
+            return result.substring(0, separator).concat("_temp")
+                    .concat(result.substring(separator, result.length()));
+        } else {
+            return result.concat("_temp");
+        }
+    }
+
+    public static String getTempCloudPath(String fromPath) {
+        int separator = fromPath.lastIndexOf(".");
+        if (separator != -1) {
+            return fromPath.substring(0, separator).concat("_temp")
+                    .concat(fromPath.substring(separator, fromPath.length()));
+        } else {
+            return fromPath.concat("_temp");
+        }
     }
 
     public static void handleException(Exception e, Class c) {

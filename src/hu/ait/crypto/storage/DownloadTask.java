@@ -26,6 +26,7 @@ public class DownloadTask {
     private boolean isDirectory;
     private List<FileOutputStream> outputStreams;
     private List<CloudBlockBlob> cloudFiles;
+    private List<File> files;
 
     public DownloadTask(AppClient client, String fromPath,
                         String toPath) throws FileNotFoundException {
@@ -72,6 +73,7 @@ public class DownloadTask {
 
         cloudFiles = new ArrayList<>();
         outputStreams = new ArrayList<>();
+        files = new ArrayList<>();
         try {
             if (isFile) {
                 addFile(cloudPathNoContainerName, toPath);
@@ -97,8 +99,10 @@ public class DownloadTask {
         cloudFiles.add(container.getBlockBlobReference(
                 blobName));
         String cloudFileName = Utility.inferCloudFileNameFromPath(blobName);
+
+        files.add(new File(toPath.concat("/" + cloudFileName)));
         outputStreams.add(new FileOutputStream(
-                toPath.concat("/" + cloudFileName)
+                files.get(files.size()-1)
         ));
     }
 
@@ -139,5 +143,13 @@ public class DownloadTask {
 
     public List<CloudBlockBlob> getCloudFiles() {
         return cloudFiles;
+    }
+
+    public List<File> getFiles() {
+        return files;
+    }
+
+    public CloudBlobContainer getContainer() {
+        return container;
     }
 }

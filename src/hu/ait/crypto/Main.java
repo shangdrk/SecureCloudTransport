@@ -66,24 +66,6 @@ public class Main {
 
 
 
-        /*try {
-            byte[] test = new byte[] {
-                    127, -17, -65, 111, 89, -17, 33, 97
-            };
-            for (int i=0; i<test.length; i++) {
-                System.out.print(test[i]+" ");
-            }
-            System.out.println("\n");
-
-            String str = java.util.Base64.getEncoder().encodeToString(test);
-            byte[] test2 = Base64.getDecoder().decode(str);
-            for (int i=0; i<test2.length; i++) {
-                System.out.println(test2[i]);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
-
         // command line arguments
         if (args.length == 0) {
             System.out.println(USAGE);

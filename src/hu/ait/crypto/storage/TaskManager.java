@@ -82,7 +82,7 @@ public class TaskManager {
             List<CloudBlockBlob> tasks = task.getCloudFiles();
             List<FileOutputStream> streams = task.getOutputStreams();
 
-            for (int i=0; i<tasks.size(); i++) {
+            for (int i = 0; i < tasks.size(); i++) {
                 tasks.get(i).download(streams.get(i));
             }
         }
@@ -162,6 +162,37 @@ public class TaskManager {
         return task;
     }
 
+    public DownloadTask createDownloadTask(AppClient client, String fromPath,
+                                   String toPath) {
+
+        DownloadTask task = null;
+        try {
+            // Assuming the task is a single file
+            CloudBlobContainer container = client.getCloudBlobClient()
+                    .getContainerReference(
+                            Utility.inferContainerNameFromPath(fromPath)
+                    );
+            CloudBlockBlob oldBlob = container.getBlockBlobReference(
+                    Utility.deleteContainerNameFromPath(fromPath)
+            );
+            CloudBlockBlob newBlob = container.getBlockBlobReference(
+                    Utility.getTempCloudFileName(fromPath)
+            );
+            newBlob.startCopy(oldBlob);
+
+            task = new DownloadTask(client, Utility.getTempCloudPath
+                    (fromPath), toPath);
+        } catch (StorageException e) {
+            e.printStackTrace();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return task;
+    }
+
     public List<byte[]> getTaskIv(DownloadTask task) {
         List<byte[]> ivList = new ArrayList<>();
 
@@ -189,13 +220,6 @@ public class TaskManager {
             }
         }
 
-
-        /*byte[] iv = java.util.Base64.getDecoder().decode(
-                task.getMetadata().get("iv")
-        );
-        decryptionManager = new DecryptionManager(iv);
-        decryptionManager.decryptFile("config/noexist/shangd.jpg4947572406554475133.tmp");*/
-
         return ivList;
     }
 
@@ -210,6 +234,22 @@ public class TaskManager {
                             task.getActualName())
             );
             newBlob.startCopy(oldBlob);
+            oldBlob.deleteIfExists();
+        } catch (StorageException e) {
+            // TODO
+        } catch (URISyntaxException e) {
+            // TODO
+        }
+    }
+
+    public void cleanUpBlobSpace(CloudBlobContainer container,
+                                 DownloadTask task) {
+        try {
+            CloudBlockBlob oldBlob = container.getBlockBlobReference(
+                    Utility.deleteContainerNameFromPath(
+                            task.getCloudPath().getRawPath()
+                    )
+            );
             oldBlob.deleteIfExists();
         } catch (StorageException e) {
             // TODO

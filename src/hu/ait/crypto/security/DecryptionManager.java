@@ -72,7 +72,16 @@ public class DecryptionManager {
     }
 
     public String finalizeFilename(String filename) {
-        // TODO
-        return "shangd.jpg";
+        String result = filename;
+        if (result.contains("_temp")) {
+            int separator = result.lastIndexOf("_temp");
+            result = result.substring(0, separator)
+                    .concat(result.substring(separator+5, result.length()));
+        }
+        return result;
+    }
+
+    public void cleanUp(File file) {
+        file.delete();
     }
 }
