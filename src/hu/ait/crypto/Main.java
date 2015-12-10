@@ -86,21 +86,25 @@ public class Main {
                 // TODO complete download
                 System.out.println("Command line arg: " + args[0]);
                 try {
+
                     DownloadTask task1 = new DownloadTask(ac,
                             "example/" + args[1],
                             args[2] //"config/noexist"
-                            );
+                    );
                     manager.download(task1);
-
 
                     List<byte[]> ivList = manager.getTaskIv(task1);
                     if (task1.isFile()) {
                         manager.setDecryptionManager(new DecryptionManager(
                                 ivList.get(0))
                         );
-                        manager.getDecryptionManager().decryptFile("config/noexist/shangd.jpg");
+                        manager.getDecryptionManager().decryptFile(task1.getFiles()
+                                .get(0).getPath());
+
+                        manager.cleanUpBlobSpace(task1.getContainer(), task1);
+                        manager.getDecryptionManager().cleanUp(task1.getFiles().get(0));
                     } else {
-                        // TODO
+                        // handle directory case
                     }
 
                 } catch (Exception e) {
