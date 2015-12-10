@@ -28,6 +28,8 @@ public class Main {
             TaskManager manager = new TaskManager(ac);
             manager.download(task1);
 
+
+
             List<byte[]> ivList = manager.getTaskIv(task1);
             if (task1.isFile()) {
                 manager.setDecryptionManager(new DecryptionManager(
@@ -41,6 +43,8 @@ public class Main {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+
 
         /*try {
             byte[] test = new byte[] {
@@ -72,6 +76,7 @@ public class Main {
 //            System.out.println("Command line arg: " + args[0]);
 //        } else if (args[0].equals("-l")) {
 //            // TODO list files in the blob
+//            manager.listFiles();
 //        }
 
 //        if (args.length > 0) {

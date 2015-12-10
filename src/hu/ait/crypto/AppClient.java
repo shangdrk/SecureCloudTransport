@@ -55,20 +55,6 @@ public class AppClient {
         }
 
         cbClient = csAccount.createCloudBlobClient();
-        // experimenting
-        CloudBlobContainer container = null;
-        try {
-            container = cbClient.getContainerReference("flashy");
-
-            for (ListBlobItem blobItem : container.listBlobs()) {
-                System.out.println(blobItem.getUri());
-            }
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        } catch (StorageException e) {
-            e.printStackTrace();
-        }
-
     }
 
     public String getAccountName() {
