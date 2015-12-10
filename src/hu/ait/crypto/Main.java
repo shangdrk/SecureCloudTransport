@@ -9,7 +9,7 @@ public class Main {
         /*try {
             TaskManager manager = new TaskManager(ac);
             manager.setEncryptionManager(new EncryptionManager());
-            UploadTask task1 = manager.createUploadTask("config/shangd.jpg",
+            UploadTask task1 = manager.createUploadTask("reallyFun.txt",
                     "example/dir");
             manager.upload(task1);
         } catch (Exception e) {
@@ -17,10 +17,10 @@ public class Main {
         }*/
 
         /*try {
-            DownloadTask task1 = new DownloadTask(ac,
-                    "example/dir/shangd.jpg4947572406554475133.tmp",
-                    "config/noexist");
             TaskManager manager = new TaskManager(ac);
+            DownloadTask task1 = manager.createDownloadTask(ac,
+                    "example/fun3.txt",
+                    "config/noexist");
             manager.download(task1);
 
             List<byte[]> ivList = manager.getTaskIv(task1);
@@ -28,29 +28,15 @@ public class Main {
                 manager.setDecryptionManager(new DecryptionManager(
                         ivList.get(0))
                 );
-                manager.getDecryptionManager().decryptFile(task1);
+                manager.getDecryptionManager().decryptFile(task1.getFiles()
+                        .get(0).getPath());
+
+                manager.cleanUpBlobSpace(task1.getContainer(), task1);
+                manager.getDecryptionManager().cleanUp(task1.getFiles().get(0));
             } else {
-                // TODO
+                // handle directory case
             }
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
-
-        /*try {
-            byte[] test = new byte[] {
-                    127, -17, -65, 111, 89, -17, 33, 97
-            };
-            for (int i=0; i<test.length; i++) {
-                System.out.print(test[i]+" ");
-            }
-            System.out.println("\n");
-
-            String str = java.util.Base64.getEncoder().encodeToString(test);
-            byte[] test2 = Base64.getDecoder().decode(str);
-            for (int i=0; i<test2.length; i++) {
-                System.out.println(test2[i]);
-            }
         } catch (Exception e) {
             e.printStackTrace();
         }*/
