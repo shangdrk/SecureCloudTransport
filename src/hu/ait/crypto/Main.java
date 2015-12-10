@@ -8,7 +8,25 @@ import hu.ait.crypto.security.*;
 import java.net.URISyntaxException;
 import java.util.List;
 
+
+
 public class Main {
+
+    public static final String USAGE = "User interface:\n" +
+            "\n" +
+            "(SecureCloudTransport = SCT)\n" +
+            "\n" +
+            "Case 1: Upload a file\n" +
+            "SCT -u \"file/path/example.txt\"\n" +
+            "\n" +
+            "Case 2: Download a file\n" +
+            "SCT -d example.txt \"my/file/path/\"\n" +
+            "\n" +
+            "Case 3: List files on the cloud\n" +
+            "SCT -l\n" +
+            "\n" +
+            "Case 4: Generate a new key\n" +
+            "SCT -k\n";
 
     public static void main(String[] args) {
         AppClient ac = new AppClient();
@@ -67,12 +85,12 @@ public class Main {
         }*/
 
         // command line arguments
-        if (args.length == 0 ) {
-            System.out.println("Usage: specify an argument -u or -d or -l or -k for upload, download, list, and new key generation.");
+        if (args.length == 0) {
+            System.out.println(USAGE);
         } else {
             TaskManager manager = new TaskManager(ac);
 
-            if (args[0].equals("-u")) {
+            if (args.length == 2 && args[0].equals("-u")) {
                 System.out.println("Command line arg: " + args[0]);
                 try {
                     manager.setEncryptionManager(new EncryptionManager());
@@ -82,13 +100,14 @@ public class Main {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-            } else if (args[0].equals("-d")) {
-                // TODO complete download 
+            } else if (args.length == 3 && args[0].equals("-d")) {
+                // TODO complete download
                 System.out.println("Command line arg: " + args[0]);
                 try {
                     DownloadTask task1 = new DownloadTask(ac,
-                            "example/fun2.txt",
-                            "config/noexist");
+                            "example/" + args[1],
+                            args[2] //"config/noexist"
+                            );
                     manager.download(task1);
 
 
@@ -117,6 +136,9 @@ public class Main {
                 }
             } else if (args[0].equals("-k")) {
                 // TODO Generate new key here
+            } else {
+                System.out.println("Unexpected input. Check usage:");
+                System.out.println(USAGE);
             }
         }
 
