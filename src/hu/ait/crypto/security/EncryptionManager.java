@@ -71,8 +71,8 @@ public class EncryptionManager {
         File temp = null;
         File current = new File(filename);
         try {
-            System.out.println(current.getPath());
-            System.out.println(current.getParent());
+            //System.out.println(current.getPath());
+            //System.out.println(current.getParent());
             if (current.getParent() != null) {
                 temp = File.createTempFile(current.getName(),
                         null, new File(current.getParent()));
